@@ -4,6 +4,7 @@ import 'bloc_example/counter/counter_page.dart';
 import 'bloc_example/api/posts_page.dart';
 import 'cubit_example/counter/counter_page.dart';
 import 'cubit_example/api/posts_page.dart';
+import 'cubit_example/pokemon/pokemon_list_page.dart';
 
 class ExamplesPage extends StatelessWidget {
   const ExamplesPage({super.key});
@@ -98,6 +99,20 @@ class ExamplesPage extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const CubitPostsPage()),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              _buildExampleCard(
+                context,
+                title: 'Pokémon Repository Pattern',
+                description:
+                    'Repository Pattern with Cubit using PokeAPI',
+                icon: Icons.catching_pokemon,
+                color: Colors.red,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PokemonListPage()),
                   );
                 },
               ),
