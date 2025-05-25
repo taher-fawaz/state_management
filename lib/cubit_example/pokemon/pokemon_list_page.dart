@@ -148,6 +148,7 @@ class _PokemonListViewState extends State<PokemonListView> {
                   MaterialPageRoute(
                     builder: (_) => PokemonDetailPage(
                       pokemonId: pokemonId,
+                      useNewCubit: true, // Use a new cubit to avoid state conflicts
                     ),
                   ),
                 );

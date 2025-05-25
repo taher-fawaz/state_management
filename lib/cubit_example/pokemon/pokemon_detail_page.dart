@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubit/pokemon.dart';
 import 'pokemon_model.dart';
+import 'pokemon_repository.dart';
 
 class PokemonDetailPage extends StatefulWidget {
   final String pokemonId;
+  final bool useNewCubit;
 
-  const PokemonDetailPage({super.key, required this.pokemonId});
+  const PokemonDetailPage({
+    super.key, 
+    required this.pokemonId,
+    this.useNewCubit = true, // Default to using a new cubit to avoid state conflicts
+  });
 
   @override
   State<PokemonDetailPage> createState() => _PokemonDetailPageState();
@@ -16,11 +22,33 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> {
   @override
   void initState() {
     super.initState();
-    context.read<PokemonCubit>().fetchPokemonDetails(widget.pokemonId);
+    // Only fetch details if we're not using a new cubit
+    // If we're using a new cubit, it will be created in the build method
+    if (!widget.useNewCubit) {
+      context.read<PokemonCubit>().fetchPokemonDetails(widget.pokemonId);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // If useNewCubit is true, create a new cubit instance for this page
+    // This prevents state conflicts when navigating back to the list
+    if (widget.useNewCubit) {
+      return BlocProvider(
+        create: (_) {
+          final cubit = PokemonCubit(repository: PokemonRepository());
+          cubit.fetchPokemonDetails(widget.pokemonId);
+          return cubit;
+        },
+        child: _buildDetailScaffold(),
+      );
+    }
+    
+    // Otherwise use the existing cubit from the parent
+    return _buildDetailScaffold();
+  }
+  
+  Widget _buildDetailScaffold() {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pokémon Details'),
@@ -35,7 +63,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> {
           } else if (state is PokemonError) {
             return Center(child: Text('Error: ${state.message}'));
           } else {
-            return const Center(child: Text('Something went wrong'));
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
